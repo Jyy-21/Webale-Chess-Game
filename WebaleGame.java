@@ -160,7 +160,104 @@ public class WebaleGame{
         }
 
         else if (type.equals("Plus"))
-            return true;
+        { 
+            x = Math.abs(fromX - toX);
+            y = Math.abs(fromY - toY);
+            System.out.println("fromX = " + fromX + " toX = " + toX + " x = " + x);
+            System.out.println("fromY = " + fromY + " toY = " + toY + " y = " + y);
+            System.out.println();
+            //move left or forward
+            if((fromX - toX) > 0 || (fromY - toY) > 0)
+            {
+                //move left
+                if((x == 0 && y >= 1))
+                {
+                    if(y==1)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        for(int i = 1; i <= y-1; i++)
+                        {
+                            if(chessboard.getSlot(fromX,fromY-i).getPiece() == null)
+                            {    
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
+                }
+
+                //move forward
+                else if(x >= 1 && y == 0)
+                {
+                    if(x==1)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        for(int i = 1; i <= x-1; i++)
+                        {
+                            if(chessboard.getSlot(fromX + i,fromY).getPiece() == null)
+                            {   
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //move right or backward
+            else if((fromX - toX) < 0 || (fromY - toY) < 0)
+            {
+                //move right
+                if(x == 0 && (fromY - toY) <= -1)
+                {
+                    if(y==1)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        for(int i = y-1 ; i > 0;  i--)
+                        {
+                            if(chessboard.getSlot(fromX, fromY + i).getPiece() == null)
+                            {    
+                                return true;
+                            }
+                             return false;   
+                        }
+
+                    }
+                }
+
+                //move backward
+                else if((fromX - toX) <= -1 && y == 0)
+                {
+                    if(x==1)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        for(int i = x-1 ; i > 0;  i--)
+                        {
+                            if(chessboard.getSlot(toX - i, toY).getPiece() == null)
+                            {    
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
 
         return false;
     }
