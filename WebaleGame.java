@@ -184,8 +184,8 @@ public class WebaleGame{
                             {    
                                 return true;
                             }
-                            return false;
                         }
+                        return false;
                     }
                 }
 
@@ -200,15 +200,12 @@ public class WebaleGame{
                     {
                         for(int i = 1; i <= x-1; i++)
                         {
-                            if(chessboard.getSlot(fromX + i,fromY).getPiece() == null)
+                            if(chessboard.getSlot(fromX - i,fromY).getPiece() == null)
                             {   
                                 return true;
                             }
-                            else
-                            {
-                                return false;
-                            }
                         }
+                        return false;
                     }
                 }
             }
@@ -230,10 +227,9 @@ public class WebaleGame{
                             if(chessboard.getSlot(fromX, fromY + i).getPiece() == null)
                             {    
                                 return true;
-                            }
-                             return false;   
+                            }  
                         }
-
+                        return false;
                     }
                 }
 
@@ -252,15 +248,12 @@ public class WebaleGame{
                             {    
                                 return true;
                             }
-                            return false;
                         }
+                        return false;
                     }
                 }
             }
         }
-
-        return false;
-    }
 
     public String getWinner(){
         int numOfSun = 0;
