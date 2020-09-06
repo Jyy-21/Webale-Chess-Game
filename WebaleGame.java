@@ -1,4 +1,5 @@
 import java.util.*;
+import java.lang.*;
 
 public class WebaleGame{
     ChessBoard chessboard;
@@ -11,8 +12,9 @@ public class WebaleGame{
     private static int playerTurn = 0;
     private static boolean hasWinner;
     private static boolean canMove = false, reachedEnd = false ;
-    private static String type, player;
+    private static String type;
     private static  int fromX,fromY, toX, toY, x, y;
+
     WebaleGame(){
         chessboard = new ChessBoard();
         player1 = new Player("B");
@@ -20,7 +22,7 @@ public class WebaleGame{
         playerList.add(player2);
         playerList.add(player1);
     }
-    
+
     public void restart(){
         chessboard.clear();
         pieceSetup();
@@ -58,32 +60,26 @@ public class WebaleGame{
             //if queue is empty
             if(queue == null)
             {
-               fromX = slot.getX();
-               fromY = slot.getY();
-               player = slot.getPiece().getPlayer().getColor();
-               type = slot.getPiece().getPieceName();
-               queue = slot.getPiece();
-               temp = slot;
-
+                type = slot.getPiece().getPieceName();
+                fromX = slot.getX();
+                fromY = slot.getY();
+                queue = slot.getPiece();
+                temp = slot;
             }
             //if queue is occupied
             else
             {
-                if(!queue.getPlayer().equals(slot.getPiece().getPlayer()))
+                toX = slot.getX();
+                toY = slot.getY();
+                canMove = validMove(type,fromX,fromY,toX,toY);
+                if(!queue.getPlayer().equals(slot.getPiece().getPlayer()) && canMove)
                 {
-                    toX = slot.getX();
-                    toY = slot.getY();
-                    canMove = validMove(type,fromX,fromY,toX,toY,player);
-                    if(canMove)
-                    {
-                        temp.setPiece(null);
-                        slot.setPiece(queue);
-                        queue = null;
-                        temp = null;
-                        playerTurn++;
-                        return true;
-                    }
-
+                    temp.setPiece(null);
+                    slot.setPiece(queue);
+                    queue = null;
+                    temp = null;
+                    playerTurn++;
+                    return true;
                 }
                 queue = null;
                 temp = null;
@@ -96,7 +92,7 @@ public class WebaleGame{
             {
                 toX = slot.getX();
                 toY = slot.getY();
-                canMove = validMove(type,fromX,fromY,toX,toY,player);
+                canMove = validMove(type,fromX,fromY,toX,toY);
                 if(canMove)
                 {
                     slot.setPiece(queue);
@@ -107,10 +103,8 @@ public class WebaleGame{
                     return true;
                 }
             }
-            else
-            {    
-                temp = null;
-            }
+            queue = null;
+            temp = null;
         }
         return false;
     }
@@ -122,43 +116,26 @@ public class WebaleGame{
         return false;
     }
 
-    public boolean validMove(String type, int fromX, int fromY, int toX, int toY,String player)
+    public boolean validMove(String type, int fromX, int fromY, int toX, int toY)
     {
+        x = fromX - toX;
+        y = fromY - toY;
         if(type.equals("Arrow"))
         {
             if(fromY == toY)
             {
-                x = fromX - toX;
-                y = fromY - toY;
                 if(reachedEnd)
                 {
-                   
-                }
 
+                }
                 else
                 {
-                    if(player.equals("R"))
-                    {    
-                        if(x == 2 && chessboard.getSlot(fromX - 1,fromY).getPiece() == null)
-                            return true;
-
-                        else if(x <= 1 && x >= 0)
-                            return true;
+                    if(x == 1 || (x == 2 && chessboard.getSlot(fromX - 1,fromY).getPiece() == null)){
+                        return true;
                     }
-                    else
-                    {
-                        if(x == -2 && chessboard.getSlot(fromX + 1,fromY).getPiece() == null)
-                            return true;
-
-                        else if (x == -1)
-                            return true;
-                    }
-
                 }
             }
-            
         }
-
         else if (type.equals("Plus"))
         { 
             x = Math.abs(fromX - toX);
@@ -224,6 +201,63 @@ public class WebaleGame{
                 }
             }
         }
+
+        else if(type.equals("Triangle")){
+            // triangle only can move diagonally, so abs(x) always equals to abs(y)
+            if(Math.abs(x) == Math.abs(y)){
+                //obstruction checking
+                //upper left
+                if(toX < fromX && toY > fromY){
+                    for(int i = 1; i < x; i++){
+                        if(chessboard.getSlot(fromX-i, fromY+i).getPiece() != null) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                // upper right
+                else if(toX > fromX && toY > fromY){
+                    for(int i = 1; i < x; i++){
+                        if(chessboard.getSlot(fromX+i, fromY+i).getPiece() != null) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                //lower left
+                else if(toX < fromX && toY < fromY){
+                    for(int i = 1; i < x; i++){
+                        if(chessboard.getSlot(fromX-i, fromY-i).getPiece() != null) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                //lower right
+                else if(toX > fromX && toY < fromY){
+                    for(int i = 1; i < x; i++){
+                        if(chessboard.getSlot(fromX+i, fromY-i).getPiece() != null) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        else if(type.equals("Chevron")){
+            if(((x == -2 || x == 2) && (y == 1 || y == -1)) || ((x == -1 || x == 1) && (y == -2 || y == 2))){
+                return true;
+            }
+        }
+        else if(type.equals("Sun")){
+            if((x == -1 || x == 0 || x == 1) && (y == -1 || y == 0 || y == 1)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public String getWinner(){
         int numOfSun = 0;
